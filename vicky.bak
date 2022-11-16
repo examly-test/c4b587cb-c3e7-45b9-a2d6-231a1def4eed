@@ -1,0 +1,13 @@
+kubectl exec -i --namespace=ide  ecebbfeeddcdffbfffcbccebbbaacbbdceeb-0 -- /bin/bash -c " cd /home/coder/project/workspace/ 
+&& if [ true ]; then ( fetchDBName=$(sqlcmd -S localhost -U sa -P examlyMssql@123 -Q \"SELECT name FROM master.sys.databases\") && listDB=$(echo $fetchDBName | cut -d' ' -f3-  | rev | cut -d' ' -f4- | rev )  && for a in $listDB; do sqlcmd -S localhost -U sa -P examlyMssql@123 -Q \"BACKUP DATABASE $a TO DISK = '/var/opt/mssql/$a.bak'\" ; done && finalDBList=$(echo $listDB.bak | sed -r 's/ /.bak /g')  && cd /var/opt/mssql && touch backupDBlist.txt && echo $finalDBList >> backupDBlist.txt  && tar -cvzf db-ecebbfeeddcdffbfffcbccebbbaacbbdceeb.tar $finalDBList backupDBlist.txt ); fi "
+
+kubectl exec -i --namespace=ide  ecebbfeeddcdffbfffcbccebbbaacbbdceeb-0 -- /bin/bash -c " cd /home/coder/project/workspace/ 
+&& touch backup.sh  
+&& echo ' fetchDBName=$(sqlcmd -S localhost -U sa -P examlyMssql@123 -Q \"SELECT name FROM master.sys.databases\") ' >> backup.sh  
+&& echo \\\"listDB=$(echo $fetchDBName | cut -d' ' -f3-  | rev | cut -d' ' -f4- | rev ) \\\" >> backup.sh  
+&& echo 'for a in $listDB; do sqlcmd -S localhost -U sa -P examlyMssql@123 -Q \\\"BACKUP DATABASE $a TO DISK = \\'/var/opt/mssql/$a.bak\\'\\\" ; done ' >> backup.sh 
+&& echo 'finalDBList=$(echo $listDB.bak | sed -r 's/ /.bak /g')'  >> backup.sh  
+&& echo 'cd /var/opt/mssql 
+&& touch backupDBlist.txt 
+&& echo $finalDBList >> backupDBlist.txt' >> backup.sh  
+&& echo 'tar -cvzf db-ecebbfeeddcdffbfffcbccebbbaacbbdceeb.tar $finalDBList backupDBlist.txt'  >> backup.sh  "
